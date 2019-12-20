@@ -12,7 +12,7 @@ from xml.sax._exceptions import SAXParseException
 from sys import stderr
 import re
 import sre_constants
-from itertools import ifilter
+#from itertools import ifilter
 
 
 # Some global variables
@@ -26,15 +26,15 @@ def parse_args(argv):
     """
     p = OptionParser()
 
-    p.add_option("-s", "--svn-log", dest="svn_log", 
+    p.add_option("-s", "--svn-log", dest="svn_log",
         metavar="<log file>",
         help="input svn log to convert to standard event xml")
 
-    p.add_option("-c", "--cvs-log", dest="cvs_log", 
+    p.add_option("-c", "--cvs-log", dest="cvs_log",
         metavar="<log file>",
         help="input cvs log to convert to standard event xml")
 
-    p.add_option("-g", "--git-log", dest="git_log", 
+    p.add_option("-g", "--git-log", dest="git_log",
         metavar="<log file>",
         help="input git log to convert to standard event xml")
 
@@ -46,11 +46,11 @@ def parse_args(argv):
         metavar="<log file>",
         help="input starteam log to convert to standard event xml")
 
-    p.add_option("-w", "--wikiswarm-log", dest="wikiswarm_log", 
+    p.add_option("-w", "--wikiswarm-log", dest="wikiswarm_log",
         metavar="<log file>",
         help="input wikiswarm log to convert to standard event xml")
 
-    p.add_option("-m", "--mercurial-log", dest="mercurial_log", 
+    p.add_option("-m", "--mercurial-log", dest="mercurial_log",
         metavar="<log file>",
         help="input mercurial log to convert to standard event xml")
 
@@ -65,11 +65,11 @@ def parse_args(argv):
     p.add_option( "-p", "--perforce-path", dest="perforce_path",
         metavar="<log file>",
         help="get data from perforce and save it to standard event xml")
-    
-    p.add_option( "-o", "--output-log", dest="output_log", 
+
+    p.add_option( "-o", "--output-log", dest="output_log",
         metavar="<log file>",
         help="specify event log output file")
-    
+
     p.add_option("--nosort", dest="nosort", default=False, action="store_true",
         help="use if the input log is already in chronological order for speed")
 
@@ -84,7 +84,7 @@ def parse_args(argv):
 
 
 def main(argv):
-    """ Calls the parse_args function based on the 
+    """ Calls the parse_args function based on the
     command-line inputs and handles parsed arguments.
     """
     (opts, args) = parse_args(argv)
@@ -92,7 +92,7 @@ def main(argv):
     # If the user specified an output log file, then use that.
     if opts.output_log is not None:
         output = open(opts.output_log, "w")
-        
+
     # Handle parsed options.
     if opts.svn_log:
         log_file = opts.svn_log
@@ -126,7 +126,7 @@ def main(argv):
         create_event_xml(parse_perforce_path(opts.perforce_path, opts), output)
         return
     else:
-        print >>stderr, "No repository format given, for more info see:\n   convert_logs.py --help"
+        print("No repository format given, for more info see:\n   convert_logs.py --help", file=sys.stderr)
         sys.exit(1)
 
     # check for valid cmd line arguments before doing anything
@@ -134,17 +134,17 @@ def main(argv):
         try:
             opts.ignore_author = re.compile(opts.ignore_author)
         except sre_constants.error:
-            print >>stderr, "Unable to compile author reg ex: %s" % \
-                  opts.ignore_author
+            print("Unable to compile author reg ex: %s" % \
+                  opts.ignore_author, file=sys.stderr)
             sys.exit(1)
-    
+
     if not os.path.exists(log_file):
         #hacky, but OptionParse doesn't support options that only sometimes
         # take an argument
         if log_file == "stdin":
             log_file = sys.stdin
         else:
-            print >>stderr, "Unable to find input log %s" % log_file
+            print("Unable to find input log %s" % log_file, file=sys.stderr)
             sys.exit(1)
     else:
         log_file = open(log_file, 'r')
@@ -154,13 +154,13 @@ def main(argv):
 
     # Remove all authors we wanted to ignore here
     if opts.ignore_author is not None:
-        events = ifilter(lambda e: opts.ignore_author.match(e.author) is None,
+        events = filter(lambda e: opts.ignore_author.match(e.author) is None,
                         events)
-        
+
     #its really best if we don't have to sort, but most data sources are
     # in the reverse order that we want, so we sort by default
     if not opts.nosort:
-        events= sorted(list(events))
+        events= sorted(events, key=lambda x: getattr(x, 'date'))
     # Generate standard event xml file from event_list.
     create_event_xml(events, output)
 
@@ -168,20 +168,20 @@ def main(argv):
 def create_event_xml(events, output):
     """ Write out the final XML given an input iterator of events."""
     from xml.sax.saxutils import XMLGenerator
-    
+
     generator = XMLGenerator(output, "utf-8")
-    generator.startDocument()    
+    generator.startDocument()
     generator.startElement('file_events', {})
-    
+
     qnames = {(None, "date"):"date",
               (None, "filename"):"filename",
               (None, "author"):"author"}
-    
+
     for event in events:
         generator.startElement("event", event.properties())
-        
+
         generator.endElement("event")
-    
+
     generator.endElement('file_events')
     generator.endDocument()
 
@@ -208,7 +208,7 @@ def parse_svn_log(file_handle, opts):
             try:
                 author = rev_parts[1]
             except IndexError:
-                print >>sys.stderr, "Skipping bad line: %s" % rev_line
+                print("Skipping bad line: %s" % rev_line, file=sys.stderr)
                 line = file_handle.readline()
                 continue
             date_parts = rev_parts[2].split(" ")
@@ -216,7 +216,7 @@ def parse_svn_log(file_handle, opts):
             try:
                 date = time.strptime(date, '%Y-%m-%d %H:%M:%S')
             except ValueError:
-                print >>sys.stderr, "Skipping malformed date: " + str(date)
+                print("Skipping malformed date: " + str(date), file=sys.stderr)
                 continue
             date = int(time.mktime(date))*1000
 
@@ -292,7 +292,7 @@ def parse_starteam_log(file_handle, opts):
     filename = None
 
     # The Starteam log can have multiple lines for each entry
-    for line in file_handle.readlines():                
+    for line in file_handle.readlines():
         m = re.compile("^Folder: (\w*)  \(working dir: (.*)\)$").match(line)
 
         if m:
@@ -352,7 +352,7 @@ def parse_mercurial_log(file_handle, opts):
         elif state == 3:
             state = 0
         else:
-            print >>stderr, 'Error: undifined state'
+            print('Error: undifined state', file=sys.stderr)
 
 def parse_gnu_changelog(file_handle, opts):
     newdate_re = re.compile("(\d{4})\-(\d\d)\-(\d\d) (.*) (<|\()")
@@ -361,24 +361,24 @@ def parse_gnu_changelog(file_handle, opts):
     for line in file_handle:
         # Newer, common date format for GNU Changelogs
         m = newdate_re.match(line)
-        
+
         #Found a person and a date, now just have to know which files were modified
         if m:
             year  = m.group(1)
             month = m.group(2)
             day   = m.group(3)
-            
+
             if(int(month) > 12): #Malformed date? Try to fix it.
                 tmp = month;
                 month = day;
                 day = tmp;
-            
+
             date = year+month+day
             date = time.strptime(date,"%Y%m%d")
             date = int(time.mktime(date))*1000
 
             author = m.group(4).strip()
-            
+
             line = file_handle.next()
             #Now read lines as long as we find files to add to this person.
             while not line[0].isdigit() and not line[0].isalpha():
@@ -388,17 +388,17 @@ def parse_gnu_changelog(file_handle, opts):
                     yield Event(filename,date,author)
                 line = file_handle.next()
             continue
-                
+
         #Try older date format
         m = olddate_re.match(line)
-        
+
         if m:
             date = m.group(1)
             date = time.strptime(date) #Format string defaults to ctime(), which is what matched
             date = int(time.mktime(date))*1000
-            
+
             author = m.group(2).strip()
-            
+
             line = file_handle.next()
             #Now read lines as long as we find files to add to this person.
             while not line[0].isdigit() and not line[0].isalpha():
@@ -430,9 +430,9 @@ def parse_darcs_xml(file_handle, opts):
                 date = re.sub("\s+"," ",date).strip() # normalize whitespace
                 try:
                     date = time.strptime(date,"%Y%m%d%H%M%S")
-                except ValueError, e:
+                except ValueError as e:
                     date = time.strptime(date,"%a %b %d %H:%M:%S  %Y")
-                
+
                 self.date = int(time.mktime(date))*1000
             elif name == "move":
                 self.newEvent(attrs["from"])
@@ -440,20 +440,20 @@ def parse_darcs_xml(file_handle, opts):
             elif name not in ["summary","name","changelog","added_lines"
                              ,"removed_lines", "add_directory", "remove_directory"
                              ,"comment", "replaced_tokens"]:
-                print >> stderr, "warning: unknown tag '%s'" % name 
-            
+                print("warning: unknown tag '%s'" % name, file=sys.stderr)
+
         def characters(self,str):
             if self.getFilename:
                 self.filename += str
-        
+
         def endElement(self, name):
             if name in self.capture_events:
                 self.newEvent(self.filename)
                 self.getFilename = False
-        
+
         def newEvent(self, name):
             self.events.append(Event(name.strip(),self.date,self.author))
-    
+
     parser = make_parser()
     dp = DarcsParser()
     parser.setContentHandler(dp)

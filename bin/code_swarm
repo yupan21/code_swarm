@@ -20,7 +20,7 @@
 import os
 import sys
 import tempfile
-import md5
+from hashlib import md5
 from random import random
 from threading import Thread
 from shutil import copy
@@ -79,16 +79,16 @@ def main():
     code_swarm_jar = os.path.join(root_path(), "dist", "code_swarm.jar")
 
     if not os.path.exists(code_swarm_jar):
-        print >>sys.stderr, "no code_swarm binaries!"
-        print >>sys.stderr, "need to build with 'ant' and 'javac' (java-sdk)"
-        print >>sys.stderr, ""
-        print >>sys.stderr, "auto-trying the ant command..."
+        print("no code_swarm binaries!", file=sys.stderr)
+        print("need to build with 'ant' and 'javac' (java-sdk)", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("auto-trying the ant command...", file=sys.stderr)
         build = os.path.join(root_path(), "build.xml")
         retn = os.system("ant -buildfile " + build)
-        print >>sys.stderr, ""
+        print("", file=sys.stderr)
         if not retn == 0:
-            print >>sys.stderr, "ERROR, please verify that Apache Ant is \
-                                 installed"
+            print("ERROR, please verify that Apache Ant is \
+                                 installed", file=sys.stderr)
             sys.exit(2)
 
     invoke_code_swarm(code_swarm_jar, proj_cfg, options)
@@ -170,7 +170,7 @@ def autogenerate_files(options):
     else:
         msg  = "This directory isn't an svn, git, hg, or darcs project. "
         msg += "Run in the base directory of a source-controlled project."
-        print >>sys.stderr, msg
+        print (msg, file=sys.stderr)
         sys.exit(2)
 
     if not os.path.exists(dir):
@@ -181,7 +181,7 @@ def autogenerate_files(options):
 
     proj_cfg = os.path.join(dir, "project.config")
     if not os.path.exists(proj_cfg):
-        print >>sys.stderr, "Creating default config file at " + proj_cfg
+        print ("Creating default config file at " + proj_cfg, file=sys.stderr)
         cp_tpl = os.path.join(root_path(), "bin", "config.template")
         copy(cp_tpl, proj_cfg)
 
