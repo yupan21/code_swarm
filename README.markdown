@@ -11,7 +11,7 @@ Google Group/Mailing List: http://groups.google.com/group/codeswarm
 
 ## Prerequisites ##
 
-You will need the Apache ant build tool, at least version 5 of the Java SDK from Sun, and Python version 2.4 or later.  Linux users: we've been unable to get code_swarm to compile with the GNU toolchain, Sun's implementation is strongly recommended.  If you're able to get it to compile with another toolchain, we'll be glad to include instructions here on how to do so.
+You will need the Apache ant build tool, at least version 5 of the Java SDK from Sun, and Python version 3.5 or later.  Linux users: we've been unable to get code_swarm to compile with the GNU toolchain, Sun's implementation is strongly recommended.  If you're able to get it to compile with another toolchain, we'll be glad to include instructions here on how to do so.
 
 
 ### Mac ###
