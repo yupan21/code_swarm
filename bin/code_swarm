@@ -66,6 +66,7 @@ def main():
     3) Invoking code_swarm
     """
 
+    # hack begin
     options = parse_args()[0]
 
     if options.config:
@@ -74,7 +75,7 @@ def main():
         proj_cfg = do_freebase(options.freebase)
     else:
         proj_cfg = autogenerate_files(options)
-
+    # hack end
 
     code_swarm_jar = os.path.join(root_path(), "dist", "code_swarm.jar")
 
@@ -157,7 +158,8 @@ def autogenerate_files(options):
     """docstring for autogenerate_files"""
     if os.path.exists(".git"):
         dir = code_swarm_dir("")
-        generate_log = do_git
+        ## hongbin
+        #generate_log = do_git
     elif os.path.exists(".svn"):
         dir = code_swarm_dir(".svn")
         generate_log = do_svn
