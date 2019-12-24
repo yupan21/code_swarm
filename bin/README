@@ -23,3 +23,6 @@ convert_logs.py supports more formats than we have documented here.  For more in
 Starteam logs must be prepared in this fashion:
 
 stcmd.exe hist -p <url> -nologo -is > activity.log
+
+`merge_logs.py` is a simple tool to combine multiple logs into one big log, currently it only supports hard-coded filename list input. If it's necessary, it can be changed to be configurable through options.
+And now it stays in my personal branch, when it allows, I will improve it and merge it into master branch.
