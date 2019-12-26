@@ -13,8 +13,8 @@ CVS_SEP = "----------------------------"
 
 def main(argv):
     output = sys.stdout
-    output = open('/Users/hongbin/log.xml', "w", encoding="utf-8")
-    file_list = ['/Users/hongbin/log1.xml', '/Users/hongbin/log2.xml', '/Users/hongbin/log3.xml',  '/Users/hongbin/log4.xml', '/Users/hongbin/log5.xml']
+    output = open('E:\codebang\merged\log.xml', "w", encoding="utf-8")
+    file_list = ['E:\codebang\merged\logA.xml', 'E:\codebang\merged\logB.xml']
 
     merge_log_file(file_list, output)
 

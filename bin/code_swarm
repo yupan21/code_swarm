@@ -92,7 +92,7 @@ def main():
                                  installed", file=sys.stderr)
             sys.exit(2)
 
-    invoke_code_swarm(code_swarm_jar, proj_cfg, options)
+    ##invoke_code_swarm(code_swarm_jar, proj_cfg, options)
 
 
 def root_path():
@@ -159,7 +159,7 @@ def autogenerate_files(options):
     if os.path.exists(".git"):
         dir = code_swarm_dir("")
         ## hongbin
-        #generate_log = do_git
+        generate_log = do_git
     elif os.path.exists(".svn"):
         dir = code_swarm_dir(".svn")
         generate_log = do_svn
@@ -203,8 +203,8 @@ def do_git(dir):
     xml = os.path.join(dir, "log.xml")
 
     return do_cmds('git log --name-status --pretty=format:"%s" > "%s"'%(fmt, tmp)
-                  ,"convert_logs.py -g '%s' -o '%s'" % (tmp, xml)
-                  ,"rm -f '%s'" % tmp)
+                  ,"python E:/codeE/code_swarm/bin/convert_logs.py -g %s -o %s" % (tmp, xml)
+                  ,"del/f/s/q %s" % tmp)
 
 
 def do_svn(dir):
